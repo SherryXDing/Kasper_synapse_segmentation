@@ -29,11 +29,6 @@ model_path = '/groups/podgorski/podgorskilab/synapse_segmentation/dingx/models/u
 # test data
 data_path = '/groups/podgorski/podgorskilab/synapse_segmentation/processed_cellpose/test/'
 img_files = glob.glob(data_path+'*.tif')
-img_mask_name = []
-for img_name in img_files:
-    mask_name = os.path.splitext(img_name)[0] + '_manual.npy'
-    pair_name = (img_name, mask_name)
-    img_mask_name.append(pair_name)
 
 # checkpoint
 ckpt_list = ['model_ckpt_2000.pt', 'model_ckpt_10000.pt']
@@ -58,11 +53,11 @@ step = (68, 68)
 # Load checkpoints
 for ckpt in ckpt_list:
     print("Test checkpoint {}".format(ckpt))
-    for idx in range(len(img_mask_name)):
-        curr_name = img_mask_name[idx]
-        assert os.path.exists(curr_name[0]) and os.path.exists(curr_name[1]), \
-            'Image or mask does not exist!'
-        img = imread(curr_name[0]).astype(float)
+    for idx in range(len(img_files)):
+        curr_name = img_files[idx]
+        assert os.path.exists(curr_name), \
+            'Image does not exist!'
+        img = imread(curr_name).astype(float)
         mu = img.mean(axis=(1,2))
         sigma = img.std(axis=(1,2))
         img = (img - mu.reshape(len(mu),1,1)) / sigma.reshape(len(sigma),1,1)
